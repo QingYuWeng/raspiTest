@@ -141,26 +141,17 @@ def th1(socket_1):
     try:
     	while True:
     		if (GPIO.input(SENSOR) == 0):
-    			socket_1.send("Abnormal sound!!")
-    			print("Abnormal")
+                socket_1.send("Abnormal sound!!")
+                print("Abnormal")
                 time.sleep(0.1)
     		else:
-    			socket_1.send("Normal")
-    			print("Normal")
+                socket_1.send("Normal")
+                print("Normal")
                 time.sleep(0.1)
     except KeyboardInterrupt:
     	pass
-    
-    # i=0
-    # while True:
-    #     print(i)
-    #     socket_1.send("%d"%i)
-    #     i=i+1
-    #     time.sleep(1)
-
 def th2(socket_2):
     global data
-#    socket_2.send("Welcome to RPi TCP server!")
     t=threading.Thread(target=THfunc,args=(socket_2,))
     t.start()
 
