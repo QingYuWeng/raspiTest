@@ -33,5 +33,3 @@ except KeyboardInterrupt:
 	pass
 
 RPi.GPIO.cleanup()
-
-#include
