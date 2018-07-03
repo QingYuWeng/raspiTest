@@ -6,6 +6,7 @@ import sys
 import threading
 import signal  
 import atexit  
+import serial
 
 data=""
 
@@ -14,9 +15,9 @@ p=""
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(12, GPIO.OUT)
 
-HOST_IP="192.168.24.2"
+HOST_IP="192.168.23.4"
 HOST_PORT=7654
-
+ser=serial.Serial('/dev/ttyACM0',9600,timeout=1)
 print("Starting socket :TCP...")
 socket_tcp=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
@@ -36,6 +37,30 @@ def down(socket_2):
     print(data)
     socket_2.send(data)
     GPIO.output(12, 0)
+
+def sFan(socket_2):
+    global data
+    print(data)
+    socket_2.send(data)
+    ser.write('s')
+
+def mFan(socket_2):
+    global data
+    print(data)
+    socket_2.send(data)
+    ser.write('m')
+
+def lFan(socket_2):
+    global data
+    print(data)
+    socket_2.send(data)
+    ser.write('l')
+
+def tFan(socket_2):
+    global data
+    print(data)
+    socket_2.send(data)
+    ser.write('t')
 
 def stop(socket_2):
     global data
@@ -172,9 +197,19 @@ def th2(socket_2):
             t.start()
         if data=="stop":
             t = threading.Thread(target=stop, args=(socket_2,))
+            t.start()        
+        if data=="s":
+            t = threading.Thread(target=sFan, args=(socket_2,))
             t.start()
-
-
+        if data=="t":
+            t = threading.Thread(target=tFan, args=(socket_2,))
+            t.start()
+        if data=="m":
+            t = threading.Thread(target=mFan, args=(socket_2,))
+            t.start()
+        if data=="l":
+            t = threading.Thread(target=lFan, args=(socket_2,))
+            t.start()
 
 while True:
     print('waiting for connection..')
@@ -195,5 +230,5 @@ while True:
 
 GPIO.cleanup()
 socket_tcp.close()
-
+ser.close()
 
