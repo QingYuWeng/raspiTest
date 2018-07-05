@@ -16,7 +16,7 @@ p=""
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(12, GPIO.OUT)
 
-HOST_IP="172.29.13.3"
+HOST_IP="172.27.35.2"
 HOST_PORT=7654
 ser=serial.Serial('/dev/ttyACM0',9600,timeout=1)
 print("Starting socket :TCP...")
@@ -92,14 +92,40 @@ def shake(socket_2):
             p.ChangeDutyCycle(0)
             time.sleep(0.02)
 
+
+def dump(socket_1):
+    while True:
+        state=ser.readall()
+        if len(state)>0:
+            if(state[0]=="D"):
+                print "Down"
+                socket_1.send("Down!")
+            if(state[0]=="N"):
+                print "NoDown"
+                socket_1.send("NoDown")
+
 def th1(socket_1):
+
+    t = threading.Thread(target=dump, args=(socket_1,))
+    t.start()
+
+    state=""
     SENSOR = 16
     GPIO.setup(SENSOR, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     while True:
         if (GPIO.input(SENSOR) == 0):
             socket_1.send("Abnormal sound!!")
-        else:
+        elif (GPIO.input(SENSOR)==1):
             socket_1.send("Normal")
+
+#        state=ser.readall()
+#        if len(state)>0:
+#            if(state[0]=="D"):
+#                print "Down"
+#                socket_1.send("Down!")
+#            if(state[0]=="N"):
+#                print "NoDown"
+#                socket_1.send("NoDown")
         time.sleep(0.1)
 def th2(socket_2):
     global data
