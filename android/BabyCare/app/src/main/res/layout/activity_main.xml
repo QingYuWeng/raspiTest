@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:background="#ffff"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="状态监测"
+        android:textSize="18sp"
+        android:layout_marginBottom="4dp"
+        android:textColor="#1FBAF3"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="温度: "
+            android:textSize="16sp"
+            android:textColor="#1FBAF3"/>
+
+        <TextView
+            android:id="@+id/tem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="27摄氏度"
+            android:textSize="16sp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="湿度: "
+            android:textSize="16sp"
+            android:textColor="#1FBAF3"/>
+
+        <TextView
+            android:id="@+id/hum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30~34"
+            android:textSize="16sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="状态: "
+            android:textColor="#1FBAF3"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/babyState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="睡眠"
+            android:textSize="16sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="异常声音: "
+            android:textSize="16sp"
+            android:textColor="#1FBAF3"/>
+
+        <TextView
+            android:id="@+id/noise"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="否"
+            android:maxLines="1"
+            android:textSize="16sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="床体状态: "
+            android:textSize="16sp"
+            android:textColor="#1FBAF3"/>
+
+        <TextView
+            android:id="@+id/bedState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="正常"
+            android:maxLines="1"
+            android:textSize="16sp"/>
+    </LinearLayout>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="功能选项"
+        android:textSize="18sp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="4dp"
+        android:textColor="#1FBAF3"/>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/smallFan"
+            android:padding="8dp"
+            android:layout_weight="1"
+            android:layout_marginRight="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape"
+            android:text="小风"
+            android:textSize="15sp"
+            android:textColor="#ffff"/>
+
+        <Button
+            android:id="@+id/medioFan"
+            android:padding="8dp"
+            android:layout_weight="1"
+            android:layout_marginRight="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape"
+            android:text="中风"
+            android:textSize="15sp"
+            android:textColor="#ffff"/>
+        <Button
+            android:id="@+id/LargeFan"
+            android:padding="8dp"
+            android:layout_weight="1"
+            android:layout_marginRight="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape"
+            android:text="大风"
+            android:textSize="15sp"
+            android:textColor="#ffff"/>
+
+        <Button
+            android:id="@+id/stopFan"
+            android:padding="8dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape"
+            android:text="关闭风扇"
+            android:textSize="15sp"
+            android:textColor="#ffff"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/shakeBed"
+            android:padding="8dp"
+            android:layout_weight="1"
+            android:layout_marginRight="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape"
+            android:layout_marginTop="4dp"
+            android:text="开启摇床"
+            android:textSize="15sp"
+            android:textColor="#ffff"/>
+
+        <Button
+            android:id="@+id/no_shakeBed"
+            android:padding="8dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape"
+            android:layout_marginTop="4dp"
+            android:text="停止摇床"
+            android:textSize="15sp"
+            android:textColor="#ffff"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/vedio"
+        android:padding="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape"
+        android:layout_marginTop="4dp"
+        android:text="视频监控"
+        android:textSize="15sp"
+        android:textColor="#ffff"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/openLight"
+            android:padding="8dp"
+            android:layout_marginRight="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/shape"
+            android:layout_marginTop="4dp"
+            android:text="开灯"
+            android:textSize="15sp"
+            android:textColor="#ffff"/>
+
+
+        <Button
+            android:id="@+id/downLight"
+            android:padding="8dp"
+            android:layout_marginLeft="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/shape"
+            android:layout_marginTop="4dp"
+            android:text="关灯"
+            android:textSize="15sp"
+            android:textColor="#ffff"/>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_recv"/>
+    </ScrollView>
+
+
+
+</LinearLayout>
