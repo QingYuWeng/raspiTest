@@ -8,6 +8,8 @@ import signal
 import atexit  
 import serial
 import os
+import numpy as np
+import cv2
 
 data=""
 
@@ -17,7 +19,7 @@ p=""
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(12, GPIO.OUT)
 
-HOST_IP="172.28.71.3"
+HOST_IP="172.27.35.4"
 HOST_PORT=7654
 ser=serial.Serial('/dev/ttyACM0',9600,timeout=1)
 print("Starting socket :TCP...")
@@ -26,7 +28,7 @@ socket_tcp=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 print("TCP server listen @%s:%d!" %(HOST_IP,HOST_PORT))
 host_addr = (HOST_IP,HOST_PORT)
 socket_tcp.bind(host_addr)
-socket_tcp.listen(3)
+socket_tcp.listen(5)
 
 def light(socket_2):
     global data
@@ -93,9 +95,75 @@ def shake(socket_2):
             p.ChangeDutyCycle(0)
             time.sleep(0.02)
 
-def monitor(arg):
-    os.system("python3 server.py")
+#def monitor(arg):
+#    os.system("python3 /home/pi/pistreaming/server.py")
 
+# usb camera #########################################
+def check_camera():
+    # check and warm the camera ########################################
+    cv2.waitKey(1000)
+    cap = cv2.VideoCapture(0)
+    cap.set(3, 320)
+    cap.set(4, 240)
+    ret = cap.isOpened()
+    if ret == False:
+        return None
+    return cap
+
+# eye_blink_type ##################################################
+def eye_blink_type(cap,socket_5):
+    i, count = 1, 0
+    #word = "="
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    while True:
+        count = 0
+        if i == 27:   i = 1
+        for _ in range(15):
+            # get a image from the camera #########################
+            ret, image = cap.read()
+            # encode the image and send to the server
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            image_encode = cv2.imencode('.jpg', image)[1]
+            data = np.array(image_encode)
+            data_string = image_encode.tostring()
+            filepath = r"haarcascade_lefteye_2splits.xml"
+            faceCascade = cv2.CascadeClassifier(filepath)
+            faces = faceCascade.detectMultiScale(image, scaleFactor=1.1, minSize=(20, 20))
+            print (faces)
+            length = len(faces)
+            if length == 1:
+                count += 1
+            key = cv2.waitKey(120)
+            if key & 0xFF == 27:
+                count = -1
+                cap.release()
+                cv2.destroyAllWindows()
+                return None
+        # decide type or not by the eye blink times(count)#################
+        if count >= 0 and count < 2:
+            print("noblink")
+            socket_5.send("noblink")
+            continue
+        if count >= 2 and count <= 10:
+            print("bilnk")
+            socket_5.send("blink")
+            for _ in range(10):
+                ret, image = cap.read()
+            time.sleep(0.05)
+            continue
+        if count >= 12:
+            print("noblink")
+            socket_5.send("noblink")
+            for _ in range(30):
+                ret, image = cap.read()
+            time.sleep(1)
+            continue
+def blink(socket_5):
+    cap = check_camera()
+    if cap == None:
+        print('Something wrong with camera!')
+        sys.exit()
+    eye_blink_type(cap,socket_5)
 
 def th4(socket_4):
     while True:
@@ -109,10 +177,6 @@ def th4(socket_4):
                 socket_4.send("NoDown")
 
 def th1(socket_1):
-
-#    t = threading.Thread(target=dump, args=(socket_1,))
-#    t.start()
-
     state=""
     SENSOR = 16
     GPIO.setup(SENSOR, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -121,16 +185,8 @@ def th1(socket_1):
             socket_1.send("Abnormal sound!!")
         elif (GPIO.input(SENSOR)==1):
             socket_1.send("Normal")
-
-#        state=ser.readall()
-#        if len(state)>0:
-#            if(state[0]=="D"):
-#                print "Down"
-#                socket_1.send("Down!")
-#            if(state[0]=="N"):
-#                print "NoDown"
-#                socket_1.send("NoDown")
         time.sleep(0.1)
+
 def th2(socket_2):
     global data
     socket_2.send("welcome to server")
@@ -232,6 +288,12 @@ def th3(socket_3):
 
 while True:
     print('waiting for connection..')
+    
+    socket_con, (client_ip, client_port) = socket_tcp.accept()
+    print("Connection accepted from %s." %client_ip)
+    
+    t4 = threading.Thread(target=blink, args=(socket_con,))
+    t4.start()
 
     socket_con, (client_ip,client_port)=socket_tcp.accept()
     print('connection accepted from %s.'%client_ip)
@@ -250,21 +312,18 @@ while True:
                 
     t3 = threading.Thread(target=th4, args=(socket_con,))
     t3.start()
-    
+
     socket_con, (client_ip, client_port) = socket_tcp.accept()
     print("Connection accepted from %s." %client_ip)
     
     t1 = threading.Thread(target=th2, args=(socket_con,))
     t1.start()
 
-    t4 = threading.Thread(target=monitor, args=(1,))
-    t4.start()
-  
+    t4.join()
     t.join()
     t2.join()
     t3.join()
     t1.join()
-    t4.join()
 GPIO.cleanup()
 socket_tcp.close()
 ser.close()

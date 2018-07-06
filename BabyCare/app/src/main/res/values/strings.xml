@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">BabyCare</string>
-    <string name="host">172.28.71.3</string>
+    <string name="host">172.27.35.4</string>
 </resources>

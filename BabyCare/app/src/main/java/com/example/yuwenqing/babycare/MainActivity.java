@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private String interNoise="";
     private String WHstate="";
     private String Bed_state="";
+    //new
+    private String Baby_state="";
 
     private TextView tv_recv;
 
@@ -58,7 +60,8 @@ public class MainActivity extends AppCompatActivity {
     private MyService.myBinder myBinder;
     private WHserver.myBinder WHBinder;
     private DumpService.myBinder DumpBinder;
-
+    //new
+    private BlinkService.myBinder BlinkBinder;
 
     //消息处理
     private Handler handler = null;
@@ -73,6 +76,9 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case 0x11:
                     bedState.setText(msg.obj.toString());
+                    break;
+                case 0x12:
+                    babyState.setText(msg.obj.toString());
                     break;
                 case 0x10:
                     temperature.setText((msg.obj.toString().split(" ")[0]).split(":")[1]);
@@ -107,6 +113,43 @@ public class MainActivity extends AppCompatActivity {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
+                        }
+                    }
+                }
+            }).start();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+
+        }
+    };
+
+
+    //婴儿状态
+    private ServiceConnection BlinkConnection=new ServiceConnection() {
+        private int state=2;
+        private int flag=0;
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            BlinkBinder=(BlinkService.myBinder)iBinder;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (true)
+                    {
+                        Baby_state=BlinkBinder.showMessage();
+                        if(Baby_state.startsWith("noblink"))
+                            flag=0;
+                        if(Baby_state.startsWith("blink"))
+                            flag=1;
+                        if(state!=flag)
+                        {
+                            state=flag;
+                            Message msg = handler1.obtainMessage();
+                            msg.what = 0x12;
+                            msg.obj = Baby_state;
+                            handler1.sendMessage(msg);
                         }
                     }
                 }
@@ -230,12 +273,17 @@ public class MainActivity extends AppCompatActivity {
 
         //声音服务绑定
         Intent bindIntent=new Intent(this,MyService.class);
-        Intent blinkIntent=new Intent(this,WHserver.class);
+        Intent WHIntent=new Intent(this,WHserver.class);
         Intent dumpIntent=new Intent(this,DumpService.class);
+        Intent blinkIntent=new Intent(this,BlinkService.class);
+
         //温湿度服务绑定
+        //开启此服务则可以进行眨眼检测
+       //bindService(blinkIntent,BlinkConnection,BIND_AUTO_CREATE);
         bindService(bindIntent,connection,BIND_AUTO_CREATE);
-        bindService(blinkIntent,WHconnection,BIND_AUTO_CREATE);
+        bindService(WHIntent,WHconnection,BIND_AUTO_CREATE);
         bindService(dumpIntent,DumpConnection,BIND_AUTO_CREATE);
+
 
 
         //指令模块

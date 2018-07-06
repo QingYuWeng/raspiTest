@@ -44,7 +44,7 @@ public class DumpService extends Service {
                 manager.notify(2,notification);
                 i=0;
             }
-            if(!recv_buff.startsWith("NoDown"))
+            if(recv_buff.startsWith("NoDown"))
             {
                 i=1;
             }

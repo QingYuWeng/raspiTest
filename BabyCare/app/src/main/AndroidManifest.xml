@@ -33,6 +33,10 @@
         <service
             android:name=".DumpService"
             android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".BlinkService"
+            android:enabled="true"
             android:exported="true"></service>
     </application>
 

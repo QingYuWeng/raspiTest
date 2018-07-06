@@ -7,64 +7,53 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Binder;
-import android.os.Build;
 import android.os.IBinder;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
-import java.util.function.LongToDoubleFunction;
 
-public class MyService extends Service {
-
+public class BlinkService extends Service {
 
     Socket socket = null;
     private int i=1;
     private String recv_buff="";
     private myBinder mBinder=new myBinder();
 
-    class myBinder extends Binder{
-        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    class myBinder extends Binder {
         public String showMessage()
         {
-            if(recv_buff.startsWith("Abnormal")&&i==1)
+            if(recv_buff.startsWith("blink")&&i==1)
             {
-                Intent intent=new Intent(MyService.this,VideoMonitor.class);
-                PendingIntent pi=PendingIntent.getActivity(MyService.this,0,intent,0);
+                Intent intent=new Intent(BlinkService.this,VideoMonitor.class);
+                PendingIntent pi=PendingIntent.getActivity(BlinkService.this,0,intent,0);
                 NotificationManager manager=(NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-                Notification notification=new NotificationCompat.Builder(MyService.this)
+                Notification notification=new NotificationCompat.Builder(BlinkService.this)
                         .setContentTitle("警报")
-                        .setContentText("有异常声音,请及时查看！！")
+                        .setContentText("您的孩子可能醒了！！")
                         .setSmallIcon(R.drawable.icon)
                         .setLargeIcon(BitmapFactory.decodeResource(getResources(),R.drawable.icon))
                         .setDefaults(NotificationCompat.DEFAULT_ALL)
                         .setAutoCancel(true)
                         .setContentIntent(pi)
                         .build();
-                manager.notify(1,notification);
+                manager.notify(3,notification);
                 i=0;
             }
-            if(!recv_buff.startsWith("Normal"))
+            if(recv_buff.startsWith("noblink"))
             {
                 i=1;
             }
-
+            Log.i("BL",recv_buff);
             return recv_buff;
         }
-    }
-
-    public MyService() {
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.i("Service","create");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -90,8 +79,12 @@ public class MyService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
+    public BlinkService() {
+    }
+
     @Override
     public IBinder onBind(Intent intent) {
+        // TODO: Return the communication channel to the service.
         return mBinder;
     }
 
