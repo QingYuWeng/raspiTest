@@ -7,6 +7,7 @@ import threading
 import signal  
 import atexit  
 import serial
+import os
 
 data=""
 
@@ -16,7 +17,7 @@ p=""
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(12, GPIO.OUT)
 
-HOST_IP="172.27.35.2"
+HOST_IP="172.28.71.3"
 HOST_PORT=7654
 ser=serial.Serial('/dev/ttyACM0',9600,timeout=1)
 print("Starting socket :TCP...")
@@ -92,22 +93,25 @@ def shake(socket_2):
             p.ChangeDutyCycle(0)
             time.sleep(0.02)
 
+def monitor(arg):
+    os.system("python3 server.py")
 
-def dump(socket_1):
+
+def th4(socket_4):
     while True:
         state=ser.readall()
         if len(state)>0:
             if(state[0]=="D"):
                 print "Down"
-                socket_1.send("Down!")
+                socket_4.send("Down!")
             if(state[0]=="N"):
                 print "NoDown"
-                socket_1.send("NoDown")
+                socket_4.send("NoDown")
 
 def th1(socket_1):
 
-    t = threading.Thread(target=dump, args=(socket_1,))
-    t.start()
+#    t = threading.Thread(target=dump, args=(socket_1,))
+#    t.start()
 
     state=""
     SENSOR = 16
@@ -240,16 +244,27 @@ while True:
 
     t2 = threading.Thread(target=th3, args=(socket_con,))
     t2.start()
+
+    socket_con, (client_ip, client_port) = socket_tcp.accept()
+    print("Connection accepted from %s." %client_ip)
+                
+    t3 = threading.Thread(target=th4, args=(socket_con,))
+    t3.start()
     
     socket_con, (client_ip, client_port) = socket_tcp.accept()
     print("Connection accepted from %s." %client_ip)
     
     t1 = threading.Thread(target=th2, args=(socket_con,))
     t1.start()
+
+    t4 = threading.Thread(target=monitor, args=(1,))
+    t4.start()
   
     t.join()
     t2.join()
+    t3.join()
     t1.join()
+    t4.join()
 GPIO.cleanup()
 socket_tcp.close()
 ser.close()
